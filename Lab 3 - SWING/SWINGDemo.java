@@ -4,6 +4,7 @@ import com.mybank.domain.Bank;
 import com.mybank.domain.CheckingAccount;
 import com.mybank.domain.Customer;
 import com.mybank.domain.SavingsAccount;
+import com.mybank.reporting.CustomerReport;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -17,34 +18,35 @@ import javax.swing.JPanel;
 
 /**
  *
- * @author Alexander 'Taurus' Babich
+ * @author Taisia Derkach
  */
 public class SWINGDemo {
     
     private final JEditorPane log;
     private final JButton show;
-    private final JComboBox clients;
+    private final JButton report;
+    private final JComboBox<String> clients;
     
     public SWINGDemo() {
         log = new JEditorPane("text/html", "");
         log.setPreferredSize(new Dimension(250, 150));
         show = new JButton("Show");
-        clients = new JComboBox();
-        for (int i=0; i<Bank.getNumberOfCustomers();i++)
-        {
-            clients.addItem(Bank.getCustomer(i).getLastName()+", "+Bank.getCustomer(i).getFirstName());
+        report = new JButton("Report");
+        clients = new JComboBox<>();
+        for (int i = 0; i < Bank.getNumberOfCustomers(); i++) {
+            clients.addItem(Bank.getCustomer(i).getLastName() + ", " + Bank.getCustomer(i).getFirstName());
         }
-        
     }
     
     private void launchFrame() {
         JFrame frame = new JFrame("MyBank clients");
         frame.setLayout(new BorderLayout());
         JPanel cpane = new JPanel();
-        cpane.setLayout(new GridLayout(1, 2));
+        cpane.setLayout(new GridLayout(1, 3));
         
         cpane.add(clients);
         cpane.add(show);
+        cpane.add(report);
         frame.add(cpane, BorderLayout.NORTH);
         frame.add(log, BorderLayout.CENTER);
         
@@ -52,12 +54,20 @@ public class SWINGDemo {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Customer current = Bank.getCustomer(clients.getSelectedIndex());
-                String accType = current.getAccount(0)instanceof CheckingAccount?"Checking":"Savings";                
-                String custInfo="<br>&nbsp;<b><span style=\"font-size:2em;\">"+current.getLastName()+", "+
-                        current.getFirstName()+"</span><br><hr>"+
-                        "&nbsp;<b>Acc Type: </b>"+accType+
-                        "<br>&nbsp;<b>Balance: <span style=\"color:red;\">$"+current.getAccount(0).getBalance()+"</span></b>";
+                String accType = current.getAccount(0) instanceof CheckingAccount ? "Checking" : "Savings";                
+                String custInfo = "<br>&nbsp;<b><span style=\"font-size:2em;\">" + current.getLastName() + ", " +
+                        current.getFirstName() + "</span><br><hr>" +
+                        "&nbsp;<b>Acc Type: </b>" + accType +
+                        "<br>&nbsp;<b>Balance: <span style=\"color:red;\">$" + current.getAccount(0).getBalance() + "</span></b>";
                 log.setText(custInfo);                
+            }
+        });
+        
+        report.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CustomerReport report = new CustomerReport();
+                report.generateReport();
             }
         });
         
@@ -80,5 +90,4 @@ public class SWINGDemo {
         SWINGDemo demo = new SWINGDemo();        
         demo.launchFrame();
     }
-    
 }
